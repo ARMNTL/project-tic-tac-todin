@@ -33,9 +33,46 @@ function gameBoard(rows = 3, cols = 3) {
     };
 }
 
+// 2
+function player(name = "Player 1", token = "X") {
+    let winsCount = 0;
+
+    const getWinsCount = () => winsCount;
+    const increaseWinsCountByOne = () => winsCount++;
+
+    const getName = () => name;
+    const setName = (newName) => (name = newName);
+
+    const getToken = () => token;
+    const setToken = (newToken) => (token = newToken);
+
+    const info = () =>
+        console.log(
+            `Player name: ${name}, token: ${token}, wins: ${winsCount}`
+        );
+
+    return {
+        getName,
+        setName,
+        getToken,
+        setToken,
+        info,
+        getWinsCount,
+        increaseWinsCountByOne,
+    };
+}
+
 // testing
 const myGameBoard = gameBoard();
+const player1 = player();
+const player2 = player("Tomas", "O");
+player1.setName("Matias");
 myGameBoard.updateCell(0, "X");
 myGameBoard.updateCell(4, "O");
 myGameBoard.updateCell(8, "X");
 myGameBoard.display();
+player1.increaseWinsCountByOne();
+player1.increaseWinsCountByOne();
+player2.increaseWinsCountByOne();
+player1.info();
+player2.info();

@@ -50,3 +50,35 @@ myGameBoard.updateCell(4, "O");
 myGameBoard.updateCell(8, "X");
 myGameBoard.display();
 ```
+
+2. Let's make the player object factory function.
+
+```js
+function player(name = "Player 1", token = "X") {
+    let winsCount = 0;
+
+    const getWinsCount = () => winsCount;
+    const increaseWinsCountByOne = () => winsCount++;
+
+    const getName = () => name;
+    const setName = (newName) => (name = newName);
+
+    const getToken = () => token;
+    const setToken = (newToken) => (token = newToken);
+
+    const info = () =>
+        console.log(
+            `Player name: ${name}, token: ${token}, wins: ${winsCount}`
+        );
+
+    return {
+        getName,
+        setName,
+        getToken,
+        setToken,
+        info,
+        getWinsCount,
+        increaseWinsCountByOne,
+    };
+}
+```
