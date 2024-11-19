@@ -152,7 +152,12 @@ const screenController = (() => {
             statusDisplay.textContent = `${
                 currentTurn === "X" ? "Player 1" : "Player 2"
             } won!`;
+            // 11
+            cellButtons.forEach((cellButton) => (cellButton.disabled = true));
         }
+
+        // 10
+        cellButtons[position].disabled = true;
 
         myGameController.switchTurn();
     };

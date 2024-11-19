@@ -394,3 +394,44 @@ const screenController = (() => {
     font-size: 5rem;
 }
 ```
+
+9. Let's make the status / announcement display bigger.
+
+```css
+.status-display p {
+    margin-top: 4rem;
+    text-align: center;
+    /* 9 */
+    font-size: 2rem;
+}
+```
+
+10. Let's disable the button when played / clicked.
+
+```js
+const handleCellButtonClick = (e) => {
+    ...
+
+    cellButtons[position].disabled = true;
+
+    myGameController.switchTurn();
+};
+```
+
+11. Also, when the game is finished.
+
+```js
+const handleCellButtonClick = (e) => {
+    ...
+
+    if (myGameController.checkForWin(myGameBoard)) {
+        statusDisplay.textContent = `${
+            currentTurn === "X" ? "Player 1" : "Player 2"
+        } won!`;
+        // 11
+        cellButtons.forEach((cellButton) => (cellButton.disabled = true));
+    }
+
+    ...
+};
+```

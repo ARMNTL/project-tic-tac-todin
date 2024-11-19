@@ -33,6 +33,8 @@ body h1 {
 .status-display p {
     margin-top: 4rem;
     text-align: center;
+    /* 9 */
+    font-size: 2rem;
 }
 
 /* 8 */
