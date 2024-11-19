@@ -23,8 +23,10 @@
 function gameBoard(rows = 3, cols = 3) {
     const cells = Array(rows * cols).fill(" ");
 
-    const updateCell = (position, token) => {
-        cells[position] = token;
+    const getCellValue = (position) => cells[position];
+
+    const setCellValue = (position, mark) => {
+        cells[position] = mark;
     };
 
     const display = () => {
@@ -39,15 +41,16 @@ function gameBoard(rows = 3, cols = 3) {
 
     return {
         display,
-        updateCell,
+        getCellValue,
+        setCellValue,
     };
 }
 
 // testing
 const myGameBoard = gameBoard();
-myGameBoard.updateCell(0, "X");
-myGameBoard.updateCell(4, "O");
-myGameBoard.updateCell(8, "X");
+myGameBoard.setCell(0, "X");
+myGameBoard.setCell(4, "O");
+myGameBoard.setCell(8, "X");
 myGameBoard.display();
 ```
 
@@ -81,4 +84,68 @@ function player(name = "Player 1", token = "X") {
         increaseWinsCountByOne,
     };
 }
+```
+
+3. Now the game logic. First the winning conditions, then taking turns.
+
+```js
+function gameController() {
+    const myGameBoard = gameBoard();
+    const player1 = player("Player 1", "X");
+    const player2 = player("Player 2", "O");
+    let gameNumber = 1;
+    let currentTurn = player1.getMark();
+
+    const winningConditions = [
+        // rows
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        // columns
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        // diagonals
+        [0, 4, 8],
+        [2, 4, 6],
+    ];
+
+    const checkForWin = () => {
+        const mark = currentTurn;
+        for (winningCondition of winningConditions) {
+            if (
+                myGameBoard.getCellValue(winningCondition[0]) === mark &&
+                myGameBoard.getCellValue(winningCondition[1]) === mark &&
+                myGameBoard.getCellValue(winningCondition[2]) === mark
+            ) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    const playTurn = () => {
+        myGameBoard.setCellValue(0, player1.getMark());
+        myGameBoard.setCellValue(1, player1.getMark());
+        myGameBoard.setCellValue(2, player1.getMark());
+
+        myGameBoard.setCellValue(3, player2.getMark());
+        myGameBoard.setCellValue(4, player2.getMark());
+        myGameBoard.setCellValue(8, player2.getMark());
+
+        myGameBoard.display();
+
+        if (checkForWin) {
+            console.log(`${currentTurn} player won!`);
+        }
+    };
+
+    return {
+        playTurn,
+    };
+}
+
+// testing
+const myGameController = gameController();
+myGameController.playTurn();
 ```
