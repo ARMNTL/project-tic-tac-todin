@@ -23,20 +23,23 @@ function gameBoard(rows = 3, cols = 3) {
         cells[position] = mark;
     };
 
-    const display = () => {
-        for (let i = 0; i < rows; i++) {
-            let row = "|";
-            for (let j = 0; j < cols; j++) {
-                row += cells[i * rows + j] + "|";
-            }
-            console.log(row);
-        }
-    };
+    const getCells = () => cells;
+
+    // this is only console version
+    // const display = () => {
+    //     for (let i = 0; i < rows; i++) {
+    //         let row = "|";
+    //         for (let j = 0; j < cols; j++) {
+    //             row += cells[i * rows + j] + "|";
+    //         }
+    //         console.log(row);
+    //     }
+    // };
 
     return {
-        display,
         getCellValue,
         setCellValue,
+        getCells,
     };
 }
 
@@ -53,15 +56,15 @@ function player(name = "Player 1", mark = "X") {
     const getMark = () => mark;
     const setMark = (newMark) => (mark = newMark);
 
-    const info = () =>
-        console.log(`Player name: ${name}, mark: ${mark}, wins: ${winsCount}`);
+    // this is only for console version
+    // const info = () =>
+    //     console.log(`Player name: ${name}, mark: ${mark}, wins: ${winsCount}`);
 
     return {
         getName,
         setName,
         getMark,
         setMark,
-        info,
         getWinsCount,
         increaseWinsCountByOne,
     };
@@ -69,7 +72,6 @@ function player(name = "Player 1", mark = "X") {
 
 // 3
 function gameController() {
-    const myGameBoard = gameBoard();
     const player1 = player("Player 1", "X");
     const player2 = player("Player 2", "O");
     let gameNumber = 1;
@@ -89,13 +91,15 @@ function gameController() {
         [2, 4, 6],
     ];
 
-    const checkForWin = () => {
+    const getCurrentTurn = () => currentTurn;
+
+    const checkForWin = (gameBoard) => {
         const mark = currentTurn;
-        for (winningCondition of winningConditions) {
+        for (eachCondition of winningConditions) {
             if (
-                myGameBoard.getCellValue(winningCondition[0]) === mark &&
-                myGameBoard.getCellValue(winningCondition[1]) === mark &&
-                myGameBoard.getCellValue(winningCondition[2]) === mark
+                gameBoard.getCellValue(eachCondition[0]) === mark &&
+                gameBoard.getCellValue(eachCondition[1]) === mark &&
+                gameBoard.getCellValue(eachCondition[2]) === mark
             ) {
                 return true;
             }
@@ -103,27 +107,59 @@ function gameController() {
         return false;
     };
 
-    const playTurn = () => {
-        myGameBoard.setCellValue(0, player1.getMark());
-        myGameBoard.setCellValue(1, player1.getMark());
-        myGameBoard.setCellValue(2, player1.getMark());
-
-        myGameBoard.setCellValue(3, player2.getMark());
-        myGameBoard.setCellValue(4, player2.getMark());
-        myGameBoard.setCellValue(8, player2.getMark());
-
-        myGameBoard.display();
-
-        if (checkForWin) {
-            console.log(`${currentTurn} player won!`);
-        }
+    const switchTurn = () => {
+        currentTurn =
+            currentTurn === player1.getMark()
+                ? player2.getMark()
+                : player1.getMark();
     };
 
     return {
-        playTurn,
+        switchTurn,
+        getCurrentTurn,
+        checkForWin,
     };
 }
 
+// 6
+const screenController = (() => {
+    const myGameController = gameController();
+    const myGameBoard = gameBoard();
+
+    const player1Score = document.querySelector("#player-1-score");
+    const player2Score = document.querySelector("#player-2-score");
+
+    const cellButtons = document.querySelectorAll(".game-board button");
+
+    const statusDisplay = document.querySelector(".status-display p");
+
+    const updateDisplay = () => {
+        const cells = myGameBoard.getCells();
+        cellButtons.forEach((cellButton, index) => {
+            cellButton.textContent = cells[index];
+        });
+    };
+
+    const handleCellButtonClick = (e) => {
+        const position = e.target.attributes.id.nodeValue.split("-")[1];
+        const currentTurn = myGameController.getCurrentTurn();
+
+        myGameBoard.setCellValue(position, currentTurn);
+
+        updateDisplay();
+
+        if (myGameController.checkForWin(myGameBoard)) {
+            statusDisplay.textContent = `${
+                currentTurn === "X" ? "Player 1" : "Player 2"
+            } won!`;
+        }
+
+        myGameController.switchTurn();
+    };
+
+    cellButtons.forEach((cellButton) => {
+        cellButton.addEventListener("click", handleCellButtonClick);
+    });
+})();
+
 // testing
-const myGameController = gameController();
-myGameController.playTurn();
