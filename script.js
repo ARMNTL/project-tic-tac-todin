@@ -25,6 +25,17 @@ function gameBoard(rows = 3, cols = 3) {
 
     const getCells = () => cells;
 
+    // 12
+    const getAvailableCells = () => {
+        let availableCells = [];
+        for (let i = 0; i < cells.length; i++) {
+            if (cells[i] === " ") {
+                availableCells.push(i);
+            }
+        }
+        return availableCells;
+    };
+
     // this is only console version
     // const display = () => {
     //     for (let i = 0; i < rows; i++) {
@@ -40,6 +51,7 @@ function gameBoard(rows = 3, cols = 3) {
         getCellValue,
         setCellValue,
         getCells,
+        getAvailableCells,
     };
 }
 
@@ -154,6 +166,11 @@ const screenController = (() => {
             } won!`;
             // 11
             cellButtons.forEach((cellButton) => (cellButton.disabled = true));
+        }
+
+        // 12
+        if (myGameBoard.getAvailableCells().length === 0) {
+            statusDisplay.textContent = "It's a tie!";
         }
 
         // 10

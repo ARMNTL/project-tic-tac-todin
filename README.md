@@ -435,3 +435,24 @@ const handleCellButtonClick = (e) => {
     ...
 };
 ```
+
+12. What about when it's a tie?
+    One way to do this, is to check how many cells are available.
+
+```js
+// gameBoard.getAvailableCells()
+const getAvailableCells = () => {
+    let availableCells = [];
+    for (let i = 0; i < cells.length; i++) {
+        if (cells[i] === " ") {
+            availableCells.push(i);
+        }
+    }
+    return availableCells;
+};
+
+// inside of screenController.handleCellButtonClick()
+if (myGameBoard.getAvailableCells().length === 0) {
+    statusDisplay.textContent = "It's a tie!";
+}
+```
