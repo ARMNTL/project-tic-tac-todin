@@ -456,3 +456,8 @@ if (myGameBoard.getAvailableCells().length === 0) {
     statusDisplay.textContent = "It's a tie!";
 }
 ```
+
+13. Let's update the score.
+    I think it's better to detach player objects out of gameController.
+
+14. Let's make a replay button. And a restart button.

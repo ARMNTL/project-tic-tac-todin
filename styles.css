@@ -41,3 +41,18 @@ body h1 {
 .game-board button {
     font-size: 5rem;
 }
+
+/* 14 */
+.game-over-options {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#keep-playing-button,
+#restart-game-button {
+    font-size: 1.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}

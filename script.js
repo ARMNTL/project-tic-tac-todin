@@ -10,8 +10,12 @@
 // bottom right cell would be
 // 2 * 3 + 2 = 8
 
+// gameBoard handles all cells status
+// - get / set cell values
+// - get cells
+// - get available cells
 function gameBoard(rows = 3, cols = 3) {
-    const cells = Array(rows * cols).fill(" ");
+    let cells = Array(rows * cols).fill(" ");
 
     const getCellValue = (position) => cells[position];
 
@@ -36,6 +40,11 @@ function gameBoard(rows = 3, cols = 3) {
         return availableCells;
     };
 
+    // 14
+    const resetBoard = () => {
+        cells = Array(rows * cols).fill(" ");
+    };
+
     // this is only console version
     // const display = () => {
     //     for (let i = 0; i < rows; i++) {
@@ -52,10 +61,16 @@ function gameBoard(rows = 3, cols = 3) {
         setCellValue,
         getCells,
         getAvailableCells,
+        resetBoard,
     };
 }
 
 // 2
+// player handles player name, scores
+// - get wins count
+// - increse wins count
+// - get / set name
+// - get / set mark
 function player(name = "Player 1", mark = "X") {
     let winsCount = 0;
 
@@ -68,6 +83,11 @@ function player(name = "Player 1", mark = "X") {
     const getMark = () => mark;
     const setMark = (newMark) => (mark = newMark);
 
+    // 14
+    const resetWinsCount = () => {
+        winsCount = 0;
+    };
+
     // this is only for console version
     // const info = () =>
     //     console.log(`Player name: ${name}, mark: ${mark}, wins: ${winsCount}`);
@@ -79,15 +99,18 @@ function player(name = "Player 1", mark = "X") {
         setMark,
         getWinsCount,
         increaseWinsCountByOne,
+        resetWinsCount,
     };
 }
 
 // 3
+// gameController handles winning condition and turns
+// - get current turn
+// - check for win
+// - switch turn
 function gameController() {
-    const player1 = player("Player 1", "X");
-    const player2 = player("Player 2", "O");
     let gameNumber = 1;
-    let currentTurn = player1.getMark();
+    let currentTurn = "X";
 
     const winningConditions = [
         // rows
@@ -119,11 +142,9 @@ function gameController() {
         return false;
     };
 
+    // 13
     const switchTurn = () => {
-        currentTurn =
-            currentTurn === player1.getMark()
-                ? player2.getMark()
-                : player1.getMark();
+        currentTurn = currentTurn === "X" ? "O" : "X";
     };
 
     return {
@@ -134,54 +155,138 @@ function gameController() {
 }
 
 // 6
+// screenController handles player interactions, buttons and displays
+// module pattern
 const screenController = (() => {
+    // 13
+    const player1 = player("Player 1", "X");
+    const player2 = player("Player 2", "O");
+
     const myGameController = gameController();
     const myGameBoard = gameBoard();
 
     const player1Score = document.querySelector("#player-1-score");
     const player2Score = document.querySelector("#player-2-score");
 
+    // 14
+    const keepPlayingButton = document.querySelector("#keep-playing-button");
+    keepPlayingButton.hidden = true;
+    const restartGameButton = document.querySelector("#restart-game-button");
+    restartGameButton.hidden = true;
+
+    const hideGameOverButtons = () => {
+        keepPlayingButton.hidden = true;
+        restartGameButton.hidden = true;
+    };
+
+    const showGameOverButtons = () => {
+        keepPlayingButton.hidden = false;
+        restartGameButton.hidden = false;
+    };
+
+    // 13
+    player1Score.textContent = `${player1.getName()}: ${player1.getWinsCount()}`;
+    player2Score.textContent = `${player2.getName()}: ${player2.getWinsCount()}`;
+
     const cellButtons = document.querySelectorAll(".game-board button");
 
     const statusDisplay = document.querySelector(".status-display p");
+    statusDisplay.textContent = `${player1.getName()} Turn`;
 
-    const updateDisplay = () => {
+    const updateBoardDisplay = () => {
         const cells = myGameBoard.getCells();
         cellButtons.forEach((cellButton, index) => {
             cellButton.textContent = cells[index];
         });
     };
 
+    // 13
+    const updateScoresDisplay = () => {
+        player1Score.textContent = `${player1.getName()}: ${player1.getWinsCount()}`;
+        player2Score.textContent = `${player2.getName()}: ${player2.getWinsCount()}`;
+    };
+
+    const updateStatusDisplay = () => {
+        const currentTurn = myGameController.getCurrentTurn();
+        if (currentTurn === "X") {
+            statusDisplay.textContent = `${player1.getName()} Turn`;
+        } else {
+            statusDisplay.textContent = `${player2.getName()} Turn`;
+        }
+    };
+
     const handleCellButtonClick = (e) => {
         const position = e.target.attributes.id.nodeValue.split("-")[1];
         const currentTurn = myGameController.getCurrentTurn();
 
+        // mark cell
         myGameBoard.setCellValue(position, currentTurn);
 
-        updateDisplay();
-
+        // if someone won
         if (myGameController.checkForWin(myGameBoard)) {
-            statusDisplay.textContent = `${
-                currentTurn === "X" ? "Player 1" : "Player 2"
-            } won!`;
+            if (currentTurn === "X") {
+                player1.increaseWinsCountByOne();
+                statusDisplay.textContent = `${player1.getName()} won!`;
+            } else {
+                player2.increaseWinsCountByOne();
+                statusDisplay.textContent = `${player2.getName()} won!`;
+            }
+
             // 11
             cellButtons.forEach((cellButton) => (cellButton.disabled = true));
+
+            // 13
+            updateScoresDisplay();
+            updateBoardDisplay();
+            showGameOverButtons();
+            myGameController.switchTurn();
+            return;
         }
 
+        updateBoardDisplay();
+        myGameController.switchTurn();
+        updateStatusDisplay();
+
         // 12
+        // if there's a tie
         if (myGameBoard.getAvailableCells().length === 0) {
             statusDisplay.textContent = "It's a tie!";
+            showGameOverButtons();
         }
 
         // 10
         cellButtons[position].disabled = true;
-
-        myGameController.switchTurn();
     };
 
     cellButtons.forEach((cellButton) => {
         cellButton.addEventListener("click", handleCellButtonClick);
     });
+
+    // Event handlers //
+    // 14
+    const handleKeepPlayingButtonClick = () => {
+        myGameBoard.resetBoard();
+
+        cellButtons.forEach((cellButton) => (cellButton.disabled = false));
+
+        hideGameOverButtons();
+
+        updateBoardDisplay();
+        updateStatusDisplay();
+    };
+
+    const handleRestartButtonClick = () => {
+        handleKeepPlayingButtonClick();
+
+        player1.resetWinsCount();
+        player2.resetWinsCount();
+
+        updateScoresDisplay();
+    };
+
+    keepPlayingButton.addEventListener("click", handleKeepPlayingButtonClick);
+
+    restartGameButton.addEventListener("click", handleRestartButtonClick);
 })();
 
 // testing
