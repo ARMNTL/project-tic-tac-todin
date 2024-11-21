@@ -461,3 +461,5 @@ if (myGameBoard.getAvailableCells().length === 0) {
     I think it's better to detach player objects out of gameController.
 
 14. Let's make a replay button. And a restart button.
+
+15. Menu? Adding a dialog. Updating some js and css. Also Odin mode!

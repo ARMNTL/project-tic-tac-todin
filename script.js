@@ -109,7 +109,6 @@ function player(name = "Player 1", mark = "X") {
 // - check for win
 // - switch turn
 function gameController() {
-    let gameNumber = 1;
     let currentTurn = "X";
 
     const winningConditions = [
@@ -142,15 +141,23 @@ function gameController() {
         return false;
     };
 
+    const odinPlays = () => {};
+
     // 13
     const switchTurn = () => {
         currentTurn = currentTurn === "X" ? "O" : "X";
+    };
+
+    const reset = () => {
+        currentTurn = "X";
     };
 
     return {
         switchTurn,
         getCurrentTurn,
         checkForWin,
+        reset,
+        odinPlays,
     };
 }
 
@@ -159,39 +166,49 @@ function gameController() {
 // module pattern
 const screenController = (() => {
     // 13
-    const player1 = player("Player 1", "X");
-    const player2 = player("Player 2", "O");
+    const playerX = player("Player X", "X");
+    const playerO = player("Player O", "O");
 
     const myGameController = gameController();
     const myGameBoard = gameBoard();
 
-    const player1Score = document.querySelector("#player-1-score");
-    const player2Score = document.querySelector("#player-2-score");
+    const body = document.querySelector("body");
+
+    const playerXScore = document.querySelector("#player-X-score");
+    const playerOScore = document.querySelector("#player-O-score");
+
+    const cellButtons = document.querySelectorAll(".game-board button");
+
+    const statusDisplay = document.querySelector(".status-display p");
 
     // 14
     const keepPlayingButton = document.querySelector("#keep-playing-button");
-    keepPlayingButton.hidden = true;
     const restartGameButton = document.querySelector("#restart-game-button");
-    restartGameButton.hidden = true;
+    const menuButton = document.querySelector("#menu-button");
 
+    // 15
+    const menuDialog = document.querySelector("#menu-dialog");
+    const playWithFriendButton = document.querySelector(
+        "#play-with-friend-button"
+    );
+    const playAgainstOdinButton = document.querySelector(
+        "#play-against-odin-button"
+    );
+    const playerXtextInput = document.querySelector("#player-X-name");
+    const playerOtextInput = document.querySelector("#player-O-name");
+
+    // helper methods //
     const hideGameOverButtons = () => {
         keepPlayingButton.hidden = true;
         restartGameButton.hidden = true;
+        menuButton.hidden = true;
     };
 
     const showGameOverButtons = () => {
         keepPlayingButton.hidden = false;
         restartGameButton.hidden = false;
+        menuButton.hidden = false;
     };
-
-    // 13
-    player1Score.textContent = `${player1.getName()}: ${player1.getWinsCount()}`;
-    player2Score.textContent = `${player2.getName()}: ${player2.getWinsCount()}`;
-
-    const cellButtons = document.querySelectorAll(".game-board button");
-
-    const statusDisplay = document.querySelector(".status-display p");
-    statusDisplay.textContent = `${player1.getName()} Turn`;
 
     const updateBoardDisplay = () => {
         const cells = myGameBoard.getCells();
@@ -202,22 +219,42 @@ const screenController = (() => {
 
     // 13
     const updateScoresDisplay = () => {
-        player1Score.textContent = `${player1.getName()}: ${player1.getWinsCount()}`;
-        player2Score.textContent = `${player2.getName()}: ${player2.getWinsCount()}`;
+        playerXScore.textContent = `${playerX.getName()}: ${playerX.getWinsCount()} point${
+            playerX.getWinsCount() === 1 ? "" : "s"
+        }`;
+        playerOScore.textContent = `${playerO.getName()}: ${playerO.getWinsCount()} point${
+            playerO.getWinsCount() === 1 ? "" : "s"
+        }`;
     };
 
     const updateStatusDisplay = () => {
         const currentTurn = myGameController.getCurrentTurn();
         if (currentTurn === "X") {
-            statusDisplay.textContent = `${player1.getName()} Turn`;
+            statusDisplay.textContent = `${playerX.getName()} plays`;
         } else {
-            statusDisplay.textContent = `${player2.getName()} Turn`;
+            statusDisplay.textContent = `${playerO.getName()} plays`;
         }
     };
 
+    // Initial setup //
+    menuDialog.showModal();
+    updateScoresDisplay();
+    updateStatusDisplay();
+    hideGameOverButtons();
+
+    // Event handlers //
     const handleCellButtonClick = (e) => {
         const position = e.target.attributes.id.nodeValue.split("-")[1];
         const currentTurn = myGameController.getCurrentTurn();
+
+        // odin mode
+        if (
+            playerX.getName() === "Odin" &&
+            playerO.getName() === "You" &&
+            currentTurn === "X"
+        ) {
+            position = myGameController.odinPlays();
+        }
 
         // mark cell
         myGameBoard.setCellValue(position, currentTurn);
@@ -225,11 +262,11 @@ const screenController = (() => {
         // if someone won
         if (myGameController.checkForWin(myGameBoard)) {
             if (currentTurn === "X") {
-                player1.increaseWinsCountByOne();
-                statusDisplay.textContent = `${player1.getName()} won!`;
+                playerX.increaseWinsCountByOne();
+                statusDisplay.textContent = `${playerX.getName()} won!`;
             } else {
-                player2.increaseWinsCountByOne();
-                statusDisplay.textContent = `${player2.getName()} won!`;
+                playerO.increaseWinsCountByOne();
+                statusDisplay.textContent = `${playerO.getName()} won!`;
             }
 
             // 11
@@ -258,11 +295,6 @@ const screenController = (() => {
         cellButtons[position].disabled = true;
     };
 
-    cellButtons.forEach((cellButton) => {
-        cellButton.addEventListener("click", handleCellButtonClick);
-    });
-
-    // Event handlers //
     // 14
     const handleKeepPlayingButtonClick = () => {
         myGameBoard.resetBoard();
@@ -276,17 +308,62 @@ const screenController = (() => {
     };
 
     const handleRestartButtonClick = () => {
-        handleKeepPlayingButtonClick();
+        myGameBoard.resetBoard();
 
-        player1.resetWinsCount();
-        player2.resetWinsCount();
+        cellButtons.forEach((cellButton) => (cellButton.disabled = false));
+
+        playerX.resetWinsCount();
+        playerO.resetWinsCount();
+
+        myGameController.reset();
+
+        hideGameOverButtons();
 
         updateScoresDisplay();
+        updateBoardDisplay();
+        updateStatusDisplay();
     };
+
+    // 15
+    const handleMenuButtonClick = () => {
+        menuDialog.showModal();
+    };
+
+    const handlePlayWithFriendButtonClick = () => {
+        playerX.setName(playerXtextInput.value);
+        playerO.setName(playerOtextInput.value);
+        menuDialog.close();
+        handleRestartButtonClick();
+        body.setAttribute("class", "friend-mode");
+    };
+
+    const handlePlayAgainstOdinButton = () => {
+        playerX.setName("Odin");
+        playerO.setName("You");
+        menuDialog.close();
+        handleRestartButtonClick();
+        body.setAttribute("class", "odin-mode");
+    };
+
+    cellButtons.forEach((cellButton) => {
+        cellButton.addEventListener("click", handleCellButtonClick);
+    });
 
     keepPlayingButton.addEventListener("click", handleKeepPlayingButtonClick);
 
     restartGameButton.addEventListener("click", handleRestartButtonClick);
+
+    menuButton.addEventListener("click", handleMenuButtonClick);
+
+    playWithFriendButton.addEventListener(
+        "click",
+        handlePlayWithFriendButtonClick
+    );
+
+    playAgainstOdinButton.addEventListener(
+        "click",
+        handlePlayAgainstOdinButton
+    );
 })();
 
 // testing

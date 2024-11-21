@@ -15,7 +15,7 @@ body h1 {
 /* 5 */
 .score-board {
     display: flex;
-    width: 480px;
+    width: 360px;
     margin: 0 auto;
     justify-content: space-between;
 }
@@ -26,12 +26,12 @@ body h1 {
     grid-template-columns: repeat(3, 1fr);
     margin: 0 auto;
     gap: 1rem;
-    width: 480px;
-    height: 480px;
+    width: 360px;
+    height: 360px;
 }
 
 .status-display p {
-    margin-top: 4rem;
+    margin: 3rem 0;
     text-align: center;
     /* 9 */
     font-size: 2rem;
@@ -51,8 +51,48 @@ body h1 {
 }
 
 #keep-playing-button,
-#restart-game-button {
-    font-size: 1.5rem;
-    padding: 1rem;
+#restart-game-button,
+#menu-button {
+    font-size: 1.2rem;
+    padding: 1rem 0;
     margin-bottom: 1rem;
+    width: 240px;
+}
+
+.menu-dialog-container,
+.menu-dialog-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-dialog-container form {
+    margin: 1rem 0;
+    width: 300px;
+}
+
+.menu-dialog-container form label {
+    /* border: 1px solid red; */
+    margin: 0.25rem 0;
+    /* width: 120px; */
+    text-align: center;
+}
+
+.menu-dialog-container form input {
+    padding: 4px;
+    text-align: center;
+    /* width: 80px; */
+}
+
+.menu-dialog-container button {
+    padding: 1rem 0;
+}
+
+.odin-mode {
+    background-color: black;
+    color: white;
+}
+
+.friend-mode {
+    background-color: white;
+    color: black;
 }
