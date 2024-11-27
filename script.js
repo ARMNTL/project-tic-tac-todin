@@ -104,7 +104,6 @@ function gameController() {
     const setRotatedBoard = (rotationNumber) => {
         // not rotated
         if (rotationNumber === 0) {
-            console.log("Not rotated");
             rotatedBoard = {
                 0: 0,
                 1: 1,
@@ -130,7 +129,6 @@ function gameController() {
             };
             // rotated 90 degrees
         } else if (rotationNumber === 1) {
-            console.log("Rotated once");
             rotatedBoard = {
                 2: 0,
                 5: 1,
@@ -156,7 +154,6 @@ function gameController() {
             };
             // rotated 180 degrees
         } else if (rotationNumber === 2) {
-            console.log("Rotated twice");
             rotatedBoard = {
                 8: 0,
                 7: 1,
@@ -182,7 +179,6 @@ function gameController() {
             };
             // rotated 270 degrees
         } else if (rotationNumber === 3) {
-            console.log("Rotated thrice");
             rotatedBoard = {
                 6: 0,
                 3: 1,
@@ -311,13 +307,10 @@ function gameController() {
             const playedCells = allCells.filter(
                 (cell) => !availableCells.includes(cell)
             );
-            console.log(playedCells);
 
             const yourMoves = playedCells.filter(
                 (cell) => !odinMovesHistory.includes(cell)
             );
-
-            console.log(`your moves: ${yourMoves}`);
 
             winningConditions.forEach((winningCondition) => {
                 let winningPositionCandidate = null;
@@ -591,7 +584,6 @@ function gameController() {
             }
 
             if (yourWinningPosition !== -1) {
-                console.log(`odin blocks`);
                 return yourWinningPosition;
             }
         }
@@ -665,7 +657,6 @@ function gameController() {
             }
 
             if (yourWinningPosition !== -1) {
-                console.log(`odin blocks`);
                 return yourWinningPosition;
             }
 
