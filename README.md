@@ -2,7 +2,20 @@
 
 ## Credits
 
-## Questions
+## Notes
+
+I'm writing this after I finished this project.
+All went well until I've got the idea to implement an 'AI'.
+This was not necessary to finish the project.
+It took at least 5 times more work than anticipated.
+Lessons I learned are:
+
+-   don't go out of the scope of the project unless it's really necessary.
+-   I think I had just a glimpse of the "spagetti code".
+-   don't wait too much to refactor or recode things to improve, it grows more difficult.
+-   pay more attention and care more about separation of concerns, or face the spagetti code.
+-   don't be afraid of trying things, learning from failures are the best.
+-   fail faster, don't go into the rabbit hole.
 
 ## Steps I made
 
@@ -463,3 +476,7 @@ if (myGameBoard.getAvailableCells().length === 0) {
 14. Let's make a replay button. And a restart button.
 
 15. Menu? Adding a dialog. Updating some js and css. Also Odin mode!
+
+16. Let's do the Odin mode!
+
+17. I got too ambitious.
